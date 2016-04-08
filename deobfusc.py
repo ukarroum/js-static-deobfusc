@@ -6,18 +6,59 @@
 #               [https://github.com/ukarroum]
 
 # Description   : Un petit script qui déobfusc un code JS sans connaissance
-#                 de l'encodage utilisé il support pour le moment six encodages : hexadecimal
-#               decimal, octal, Unicode, Base64, HTML reference characters
+#                 de l'encodage utilisé il support pour le moment quatres encodages : HTML reference Character (hex et dec), Unicode, base 64
 #
 #               Tout cela est fait de manière statique
 #############################################
 
+import re
+import base64
+
 def hex2str(code):
     
-    while "&#x" in code: 
-        pos = code.find("&#x")
-        code = code[:pos] + chr(int(code[pos + 3:pos + 5], 16)) + code[pos + 5:] #Suppos que le caractere sera codé sur deux chiffres hexa.
-       
+    items = re.findall("&#x[0-9A-Fa-f]{2};", code)
+    for item in items:   
+        code = code.replace(item, chr(int(item[3:-1], 16)))
+        
+    items = re.findall("\\\\x[0-9A-Fa-f]{2}", code)
+    for item in items:   
+        code = code.replace(item, chr(int(item[2:], 16)))
+        
     return code
 
-print(hex2str("&#x6A&#x61&#x76&#x61&#x73&#x63&#x72&#x69&#x70&#x74&#x3A&#x61&#x6C&#x65&#x72&#x74&#x28&#x27&#x58&#x53&#x53&#x27&#x29"))
+def dec2str(code):
+    
+    items = re.findall("&#[0-9]{2,3};", code)
+    for item in items:   
+        code = code.replace(item, chr(int(item[2:-1])))
+    return code
+
+def oct2str(code):
+
+    items = re.findall("\\\\[0-9]{3}", code)
+    for item in items:   
+        code = code.replace(item, chr(int(item[1:], 8)))
+        
+    return code
+
+def unicode2str(code):
+     
+    items = re.findall("\\\\u[0-9a-fA-F]{4}", code)
+    for item in items:   
+        code = code.replace(item, chr(int(item[2:], 16)))
+        
+    items = re.findall("\\\\U[0-9a-fA-F]{8}", code)
+    for item in items:   
+        code = code.replace(item, chr(int(item[2:], 16)))
+        
+    return code
+
+def base642str(code):
+
+    items = re.findall("base64,[0-9a-zA-Z+/=]+", code)
+    for item in items:   
+        code = code.replace(item, base64.b64decode(item[7:]).decode('utf-8'))
+        
+    return code
+    
+    
