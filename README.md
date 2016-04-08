@@ -10,3 +10,5 @@ Il supporte pour le moment deux encodage :
 * Encodage en Octal
 * Encodage en Unicode
 * [Base64](https://fr.wikipedia.org/wiki/Base64)
+* [Encodage Url](http://www.w3schools.com/tags/ref_urlencode.asp)
+* [String.fromCharCode()](https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/String/fromCharCode)

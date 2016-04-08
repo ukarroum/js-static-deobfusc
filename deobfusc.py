@@ -13,6 +13,7 @@
 
 import re
 import base64
+import urllib.parse
 
 def hex2str(code):
     
@@ -61,4 +62,20 @@ def base642str(code):
         
     return code
     
+def url2str(code):
+    return urllib.parse.unquote(code)
+
+def charcode2str(code):
+    
+    while "String.fromCharCode" in code:
+        pos = code.find("String.fromCharCode")
+        hiddenStr = code[code.find("(", pos) + 1:code.find(")", pos)]
+        hiddenStr = hiddenStr.split(',')
+        hiddenStr = [ int(x) for x in hiddenStr ]
+       
+        code = code[:pos] + ''.join(map(chr, hiddenStr)) + code[code.find(")", pos) + 1:] 
+    return code
+
+def decode(code):
+    return(charcode2str(hex2str(dec2str(oct2str(unicode2str(base642str(url2str(code))))))))
     
